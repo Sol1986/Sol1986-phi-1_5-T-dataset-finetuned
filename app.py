@@ -1,3 +1,4 @@
+%%writefile app.py
 import streamlit as st
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
@@ -30,10 +31,10 @@ def load_model_and_tokenizer(model_name):
 
     return tokenizer, model, device # Return device
 
-tokenizer, model = load_model_and_tokenizer(model_name)
+tokenizer, model, device = load_model_and_tokenizer(model_name) # Correctly unpack device
 # Model inference function
 def generate_text(prompt):
-    input_ids = tokenizer.encode(prompt, return_tensors="pt").to(model.device)
+    input_ids = tokenizer.encode(prompt, return_tensors="pt").to(device)
     model.eval() # Set model to evaluation mode
     with torch.no_grad(): # Disable gradient calculation for inference
         output = model.generate(
@@ -52,5 +53,6 @@ if generate_button and prompt_text: # Check if button is clicked AND prompt is n
     generated_output = generate_text(prompt_text)
     st.success("Generated Text:")
     st.write(generated_output)
+    st.write(f"Model Device: {device}") # Display the device being used
 elif generate_button and not prompt_text: # If button is clicked but no prompt
     st.warning("Please enter a text prompt before generating.")
