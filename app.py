@@ -19,10 +19,19 @@ model_name = "Sol1986/phi-1_5-T-dataset-finetuned"
 def load_model_and_tokenizer(model_name):
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(model_name)
-    return tokenizer, model
+    
+    # Determine device: GPU if available, CPU otherwise
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    else:
+        device = torch.device("cpu")
+
+    model.to(device) # Move model to the determined device
+
+    return tokenizer, model, device # Return device
 
 tokenizer, model = load_model_and_tokenizer(model_name)
-device = torch.device("cuda")
+
 # Model inference function
 def generate_text(prompt):
     input_ids = tokenizer.encode(prompt, return_tensors="pt").to(model.device)
