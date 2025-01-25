@@ -19,7 +19,7 @@ model_name = "Sol1986/phi-1_5-T-dataset-finetuned"
 def load_model_and_tokenizer(model_name):
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(model_name)
-    
+
     # Determine device: GPU if available, CPU otherwise
     if torch.cuda.is_available():
         device = torch.device("cuda")
@@ -31,11 +31,9 @@ def load_model_and_tokenizer(model_name):
     return tokenizer, model, device # Return device
 
 tokenizer, model = load_model_and_tokenizer(model_name)
-
 # Model inference function
 def generate_text(prompt):
     input_ids = tokenizer.encode(prompt, return_tensors="pt").to(model.device)
- 
     model.eval() # Set model to evaluation mode
     with torch.no_grad(): # Disable gradient calculation for inference
         output = model.generate(
